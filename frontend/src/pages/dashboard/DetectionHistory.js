@@ -24,6 +24,7 @@ const DetectionHistory = () => {
 
   useEffect(() => {
     if (openId) loadDetail(openId);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [openId]);
 
   const loadDetail = async (id) => {
@@ -78,8 +79,26 @@ const DetectionHistory = () => {
   const pageRows = filtered.slice((current - 1) * PAGE_SIZE, current * PAGE_SIZE);
 
   const detailDownload = () => {
-    if (!detail) return;
-    generatePredictionReport({ ...detail, prediction_id: detail.id }, user);
+    if (!detail) {
+      console.error('No detail data available for PDF generation');
+      alert('No prediction data available. Please try again.');
+      return;
+    }
+    
+    console.log('Starting PDF download...');
+    console.log('Detail data:', detail);
+    console.log('User data:', user);
+    
+    try {
+      const result = generatePredictionReport({ ...detail, prediction_id: detail.id }, user);
+      if (result && result.success === false) {
+        console.error('PDF generation failed:', result.error);
+        alert(`Failed to generate PDF: ${result.error}`);
+      }
+    } catch (error) {
+      console.error('Error during PDF download:', error);
+      alert('An error occurred while generating the PDF. Please check the console for details.');
+    }
   };
 
   const info = detail ? getTumorInfo(detail.predicted_class) : null;

@@ -1,14 +1,27 @@
-import jsPDF from 'jspdf';
+import { jsPDF } from 'jspdf';
 import 'jspdf-autotable';
 
 export const generatePredictionReport = (prediction, user) => {
+  console.log('🔄 PDF Generation Started');
+  console.log('Prediction:', JSON.stringify(prediction, null, 2));
+  console.log('User:', JSON.stringify(user, null, 2));
+  
   try {
-    console.log('🔄 Generating PDF report...');
-    console.log('Prediction data:', prediction);
-    console.log('User data:', user);
+    // Validate required data
+    if (!prediction) {
+      throw new Error('Prediction data is missing');
+    }
+    
+    if (!prediction.predicted_class) {
+      throw new Error('Predicted class is missing from prediction data');
+    }
+    
+    console.log('✅ Validation passed, creating PDF document...');
     
     // Create new PDF document
     const doc = new jsPDF();
+    console.log('✅ jsPDF instance created');
+    console.log('✅ autoTable available:', typeof doc.autoTable);
     
     // Set fonts and colors
     const primaryColor = [26, 84, 144]; // #1a5490
@@ -57,33 +70,50 @@ export const generatePredictionReport = (prediction, user) => {
     const confidence = prediction.confidence || 0;
     const timestamp = prediction.timestamp || new Date().toISOString();
     
-    doc.autoTable({
-      startY: 73,
-      head: [['Parameter', 'Value']],
-      body: [
-        ['Predicted Class', predictedClass.toUpperCase()],
-        ['Confidence Score', `${(confidence * 100).toFixed(2)}%`],
-        ['Model Used', 'CNN Deep Learning Model'],
-        ['Analysis Date', new Date(timestamp).toLocaleString()]
-      ],
-      theme: 'striped',
-      headStyles: {
-        fillColor: primaryColor,
-        fontSize: 11,
-        fontStyle: 'bold'
-      },
-      styles: {
-        fontSize: 10
-      },
-      columnStyles: {
-        0: { fontStyle: 'bold', cellWidth: 60 },
-        1: { cellWidth: 110 }
-      }
-    });
+    let finalY = 73;
+    
+    // Use autoTable if available, otherwise fallback
+    if (typeof doc.autoTable === 'function') {
+      doc.autoTable({
+        startY: 73,
+        head: [['Parameter', 'Value']],
+        body: [
+          ['Predicted Class', predictedClass.toUpperCase()],
+          ['Confidence Score', `${(confidence * 100).toFixed(2)}%`],
+          ['Model Used', 'CNN Deep Learning Model'],
+          ['Analysis Date', new Date(timestamp).toLocaleString()]
+        ],
+        theme: 'striped',
+        headStyles: {
+          fillColor: primaryColor,
+          fontSize: 11,
+          fontStyle: 'bold'
+        },
+        styles: {
+          fontSize: 10
+        },
+        columnStyles: {
+          0: { fontStyle: 'bold', cellWidth: 60 },
+          1: { cellWidth: 110 }
+        }
+      });
+      finalY = doc.lastAutoTable.finalY + 10;
+    } else {
+      // Fallback if autoTable is not available
+      console.warn('autoTable not available, using manual layout');
+      finalY = 80;
+      doc.setFontSize(10);
+      doc.text('Predicted Class: ' + predictedClass.toUpperCase(), 20, finalY);
+      finalY += 10;
+      doc.text(`Confidence Score: ${(confidence * 100).toFixed(2)}%`, 20, finalY);
+      finalY += 10;
+      doc.text('Model Used: CNN Deep Learning Model', 20, finalY);
+      finalY += 10;
+      doc.text('Analysis Date: ' + new Date(timestamp).toLocaleString(), 20, finalY);
+      finalY += 15;
+    }
     
     // Result Interpretation
-    let finalY = doc.lastAutoTable.finalY + 10;
-    
     doc.setFontSize(14);
     doc.setFont(undefined, 'bold');
     doc.setTextColor(...primaryColor);
@@ -95,7 +125,6 @@ export const generatePredictionReport = (prediction, user) => {
     doc.setTextColor(0, 0, 0);
     
     const interpretation = getInterpretation(predictedClass, confidence * 100);
-    
     const splitInterpretation = doc.splitTextToSize(interpretation, 170);
     doc.text(splitInterpretation, 20, finalY);
     finalY += splitInterpretation.length * 5 + 5;
@@ -116,21 +145,31 @@ export const generatePredictionReport = (prediction, user) => {
         ]
       );
       
-      doc.autoTable({
-        startY: finalY,
-        head: [['Class', 'Probability']],
-        body: probData,
-        theme: 'grid',
-        headStyles: {
-          fillColor: accentColor,
-          fontSize: 10
-        },
-        styles: {
-          fontSize: 9
-        }
-      });
-      
-      finalY = doc.lastAutoTable.finalY + 10;
+      if (typeof doc.autoTable === 'function') {
+        doc.autoTable({
+          startY: finalY,
+          head: [['Class', 'Probability']],
+          body: probData,
+          theme: 'grid',
+          headStyles: {
+            fillColor: accentColor,
+            fontSize: 10
+          },
+          styles: {
+            fontSize: 9
+          }
+        });
+        finalY = doc.lastAutoTable.finalY + 10;
+      } else {
+        // Fallback without autoTable
+        doc.setFontSize(10);
+        finalY += 10;
+        probData.forEach(([className, prob]) => {
+          doc.text(`${className}: ${prob}`, 20, finalY);
+          finalY += 7;
+        });
+        finalY += 10;
+      }
     }
     
     // Tumor Type Information
@@ -148,7 +187,6 @@ export const generatePredictionReport = (prediction, user) => {
       const tumorInfo = getTumorInfo(predictedClass);
       const splitTumorInfo = doc.splitTextToSize(tumorInfo, 170);
       doc.text(splitTumorInfo, 20, finalY);
-      finalY += splitTumorInfo.length * 5 + 10;
     }
     
     // New page for disclaimer
