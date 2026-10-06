@@ -1,5 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import Chatbot from '../components/Chatbot';
 import './HomePage.css';
 
 const HomePage = () => {
@@ -504,6 +505,9 @@ const HomePage = () => {
           </div>
         </div>
       </section>
+
+      {/* NeuroBot Chatbot - Always accessible */}
+      <Chatbot />
     </div>
   );
 };

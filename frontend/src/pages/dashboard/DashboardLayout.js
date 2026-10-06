@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { Outlet, useNavigate } from 'react-router-dom';
 import Sidebar from './Sidebar';
 import TopBar from './TopBar';
+import Chatbot from '../../components/Chatbot';
 import { predictionAPI } from '../../services/api';
 import './Dashboard.css';
 
@@ -89,6 +90,8 @@ const DashboardLayout = () => {
           qualified healthcare professional.
         </footer>
       </div>
+      {/* NeuroBot Chatbot - Always accessible on left side */}
+      <Chatbot />
     </div>
   );
 };

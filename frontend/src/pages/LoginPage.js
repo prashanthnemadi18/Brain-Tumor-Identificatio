@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { authAPI } from '../services/api';
+import Chatbot from '../components/Chatbot';
 import './LoginPage.css';
 
 const LoginPage = () => {
@@ -340,6 +341,9 @@ const LoginPage = () => {
           </div>
         </div>
       </div>
+
+      {/* NeuroBot Chatbot - Always accessible */}
+      <Chatbot />
     </div>
   );
 };

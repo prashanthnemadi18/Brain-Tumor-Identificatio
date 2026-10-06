@@ -31,12 +31,15 @@ checkpoints/
 
 # Backend
 backend/uploads/*
+!backend/uploads/.gitkeep
 backend/reports/*
+!backend/reports/.gitkeep
 backend/models/*.h5
 backend/models/results/*
 !backend/models/.gitkeep
-!backend/uploads/.gitkeep
-!backend/reports/.gitkeep
+backend/query
+backend/test_*.py
+backend/*.pyc
 
 # Environment variables
 .env
