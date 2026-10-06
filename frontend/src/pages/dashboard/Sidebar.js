@@ -2,7 +2,7 @@ import React from 'react';
 import { NavLink } from 'react-router-dom';
 import {
   IconHome, IconBrain, IconChart, IconHistory,
-  IconUser, IconSettings, IconLogout, IconClose,
+  IconUser, IconLogout, IconClose,
 } from '../../components/icons';
 
 const NAV_ITEMS = [
@@ -11,7 +11,6 @@ const NAV_ITEMS = [
   { to: '/dashboard/analytics', label: 'Analytics', icon: IconChart },
   { to: '/dashboard/history', label: 'Detection History', icon: IconHistory },
   { to: '/dashboard/profile', label: 'Profile', icon: IconUser },
-  { to: '/dashboard/settings', label: 'Settings', icon: IconSettings },
 ];
 
 const Sidebar = ({ open, onClose, onLogout, user }) => (

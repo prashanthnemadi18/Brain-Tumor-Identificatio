@@ -8,7 +8,6 @@ import TumorIdentification from './pages/dashboard/TumorIdentification';
 import Analytics from './pages/dashboard/Analytics';
 import DetectionHistory from './pages/dashboard/DetectionHistory';
 import Profile from './pages/dashboard/Profile';
-import Settings from './pages/dashboard/Settings';
 import './App.css';
 
 // Protected Route Component
@@ -37,7 +36,6 @@ function App() {
             <Route path="analytics" element={<Analytics />} />
             <Route path="history" element={<DetectionHistory />} />
             <Route path="profile" element={<Profile />} />
-            <Route path="settings" element={<Settings />} />
           </Route>
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>

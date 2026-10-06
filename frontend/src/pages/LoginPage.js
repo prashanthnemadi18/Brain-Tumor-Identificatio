@@ -116,14 +116,6 @@ const LoginPage = () => {
     });
   };
 
-  const handleForgotPassword = () => {
-    setNotice(
-      formData.email
-        ? `If an account exists for ${formData.email}, a password reset link would be sent here.`
-        : 'Enter your email above, then choose “Forgot Password?” to receive a reset link.'
-    );
-  };
-
   return (
     <div className="login-page">
       <div className="login-container">
@@ -245,19 +237,6 @@ const LoginPage = () => {
               )}
             </button>
           </form>
-
-          {isLogin && (
-            <div className="forgot-row">
-              <button
-                type="button"
-                className="link-button"
-                onClick={handleForgotPassword}
-                disabled={loading}
-              >
-                Forgot Password?
-              </button>
-            </div>
-          )}
 
           <div className="login-footer">
             <p>
