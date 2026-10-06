@@ -110,7 +110,7 @@ const findAnswer = (userMessage) => {
   const message = userMessage.toLowerCase();
   
   // Check each knowledge base entry
-  for (const [key, data] of Object.entries(KNOWLEDGE_BASE)) {
+  for (const [, data] of Object.entries(KNOWLEDGE_BASE)) {
     if (data.keywords.some(keyword => message.includes(keyword))) {
       return data.answer;
     }
